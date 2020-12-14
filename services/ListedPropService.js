@@ -19,6 +19,7 @@ module.exports = class ListedPropService{
         }        
     }
 
+    //TODO : Remove extra properties from response
     async GetListedProps(filterCond){
         let listedPropDocs;
         if(filterCond){
@@ -28,12 +29,5 @@ module.exports = class ListedPropService{
             listedPropDocs = await this.listedpropsModel.find()
         }        
         return listedPropDocs
-            /*
-            let listedPropObject = listedPropDocs.toObject()
-                Reflect.deleteProperty(listedPropObject, 'createdAt');
-                Reflect.deleteProperty(listedPropObject, 'updatedAt');
-                Reflect.deleteProperty(listedPropObject, '__v');
-                return listedPropObject
-                */               
     }
 }

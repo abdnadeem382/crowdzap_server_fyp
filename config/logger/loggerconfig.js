@@ -25,8 +25,8 @@ winston.loggers.add(DEFAULT_CATEGORY, createLoggerConfig(DEFAULT_CATEGORY));
 winston.loggers.add("database.js", createLoggerConfig("database.js"));
 winston.loggers.add("server.js", createLoggerConfig("server.js"));
 
-winston.loggers.add("UserController.js", createLoggerConfig("UserController.js"));
+
 winston.loggers.add("ListedPropController.js", createLoggerConfig("ListedPropController.js"));
-winston.loggers.add("CryptoOrderController.js", createLoggerConfig("CryptoOrderController.js"));
+
 
 module.exports = createLoggerConfig;
