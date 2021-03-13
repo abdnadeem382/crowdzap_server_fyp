@@ -4,7 +4,7 @@ const express = require("express");
 const {getWithAuth} = require("../middlewares")
 const router = new express.Router();
 
-const { createlistedPropsController, getListedPropsController } = require("../../controllers/listedProps/listedProps");
+const { createlistedPropsController, filterListedPropsController, getListedPropsController } = require("../../controllers/listedProps/listedProps");
 
 module.exports = (app)=> {
     app.use("/property",router)
@@ -38,6 +38,5 @@ module.exports = (app)=> {
         
     router.get(
         "/get_listed_props",
-        getWithAuth,
         getListedPropsController);
 }
