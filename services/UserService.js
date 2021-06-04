@@ -6,9 +6,11 @@ const bcrypt = require("bcrypt")
 module.exports = class UserService{
     userModal
     kycModal
+    investmentModal
     constructor() {
         this.userModal = Container.get("userModel")
         this.kycModal = Container.get("kycModel")
+        this.investmentModal = Container.get("investmentModel")
     }
 
     async Register(userObj){
@@ -46,16 +48,22 @@ module.exports = class UserService{
             throw new Error("User not registered")
         }else{
             let compare = await bcrypt.compare(password, user.password)
-            console.log(compare)
             if (compare){
-                let token = await this.generateJwt(user)
+                let kycStatus = ""
+                let kyc = await this.kycModal.findOne({userId:user._id})
+                if(kyc){
+                    kycStatus = kyc.status
+                }
+                let token = await this.generateJwt(user, kycStatus)
                 if (!token) throw new Error("Failed to generate token")
                 let userObject = user.toObject()
                 Reflect.deleteProperty(userObject, 'createdAt');
                 Reflect.deleteProperty(userObject, 'password');
                 Reflect.deleteProperty(userObject, 'updatedAt');
                 Reflect.deleteProperty(userObject, '__v');
-                return {user:userObject, token:token}
+
+                //get kys status
+                return {user:userObject,token:token}
             }else{
                 throw new Error("Password mismatch")
             }
@@ -74,6 +82,17 @@ module.exports = class UserService{
         }
     }
 
+    async ProcessKYCRequest(data){
+        const requestDoc = await this.kycModal.findOneAndUpdate(
+            {_id: data.requestId},
+            {
+                status: data.status
+            } 
+            )
+        if (requestDoc) return true
+        return false        
+    }
+
     async AddKey(keyObj, userId){
         const userDoc = await this.userModal.findOneAndUpdate(
             {_id: userId},
@@ -88,6 +107,32 @@ module.exports = class UserService{
         return false        
     }
 
+
+
+    async AddContact(contactObj, userId){
+        let contactUser = await this.userModal.findOne({email: contactObj.email})
+        if(contactUser){
+            contactObj["contactId"] = contactUser._id
+            const userDoc = await this.userModal.findOneAndUpdate(
+                {_id: userId},
+                {
+                    "$push": {
+                        "contacts": contactObj
+                    }
+                },
+                { new: true, upsert: false }    
+                )
+            if (userDoc) return true
+            return false
+        }  
+        return false        
+    }
+
+    async GetAllKYC(){
+        const kycDocs = await this.kycModal.find({})
+        return kycDocs        
+    }
+
     async GetKeys(userId){
         const userDoc = await this.userModal.findOne({_id: userId})
         if (userDoc) {
@@ -97,11 +142,24 @@ module.exports = class UserService{
         return null        
     }
 
-    generateJwt(payload){
+    async GetContacts(userId){
+        const userDoc = await this.userModal.findOne({_id: userId})
+        if (userDoc) {
+            let userObject = userDoc.toObject()
+            return userObject.contacts
+        }
+        return null        
+    }
+
+    generateJwt(payload, kycStatus){
         return jwt.sign({
             _id: payload._id,
             name: payload.name,
             email: payload.email,
+            kycStatus: kycStatus,
+            role: payload.role,
+            profileImg:payload.profileImg,
+            contacts: payload.contacts
         },
             process.env.JWT_SECRET,
             {expiresIn: "7d",
