@@ -25,13 +25,15 @@ module.exports = (app)=> {
                 }),
                 detail: Joi.string().required(),
                 endDate: Joi.date().required(),
-                officalDocs:Joi.string().required(),
+                officialDocs:Joi.string().required(),
                 mainImg:Joi.string().required(),
                 galleryImages: Joi.array().required(),
                 nodeId: Joi.string().required().required(),//change it according to cosmos validator address/public key
                 nodeName: Joi.string().required(),
                 contractAddress: Joi.string().required(), 
-                contractType: Joi.string().required()              
+                contractType: Joi.string().required(),
+                totalSupply: Joi.number().max(900000000).required(),
+                tokenPrice: Joi.number().max(900000000).required(),
             })
         }),
         createlistedPropsController);
