@@ -1,37 +1,41 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 // Create Schema
-const KycSchema = new Schema({
-  docType: {
+const InvestmentSchema = new Schema({
+  contractAddress: {
     type: String,
     trim: true,
     required: true,
   },
-  number: {
+  amount: {
     type: Number,
+    required: true,
+  },
+  transactionHash: {
+    type: String,
     trim: true,
     required: true,
     unique: true,
   },
-  name:{
-    type: String,
-  },
-  expiry: {
+  contractType: {
     type: String,
     required: true,
   },
-  doc: {
+  senderName:{
     type: String,
-    required: true,
+    default:"Self"
   },
-  addressProof:{
+  senderAddress:{
     type: String,
-    required: true,
+    default:"----"
+  },
+  investmentType:{
+    type:String,
+    default:"invested"
   },
   userId:{
-      type: String,
+      type:  mongoose.Types.ObjectId,
       required : true,
-    unique: true
   },
   createdAt: {
     type: Date,
@@ -39,7 +43,7 @@ const KycSchema = new Schema({
   },
   status:{
    type:String,
-    default:"pending"
+    default:"submitted"
   }
 },
 {
@@ -47,4 +51,4 @@ const KycSchema = new Schema({
 },
 );
 
-module.exports = User = mongoose.model("kyc", KycSchema);
+module.exports = Investment = mongoose.model("investment", InvestmentSchema);

@@ -18,21 +18,27 @@ const CryptoOrderSchema = new Schema({
         type: Date,
         default: Date.now,
     },
-	fiatCurrencyTranId:{
+	cryptoTranHash:{
         type: String,
-        required: true,
+    },
+    cryptoType:{
+        type: String,
+        required: true
     },
 	userId:{
         type: mongoose.Types.ObjectId,
         required: true,
     },
+    cryptoType:{
+        type:String,
+        required: true
+    },
 	transactionId:{
         type: String,
-        required: true,
     },
     processed:{
-        type: Boolean,
-        default: false
+        type: Number,
+        default: 1
     }
 },
 {
